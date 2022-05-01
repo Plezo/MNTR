@@ -1,16 +1,34 @@
 body {
     background-color: #000000;
     background-repeat: no-repeat;
-    background-size: cover;
-    height: 100%;
+}
+
+.PrivateKeyForm {
     width: 100%;
 }
 
-.privateKeyForm {
-    width: 50%;
+.RPCForm {
+    width: 100%;
+}
+
+.ContractAddressForm {
+    width: 100%;
+}
+
+.ABIForm {
+    width: 100%;
+}
+
+.PriceForm {
+    width: 100%;
+}
+
+.AmountForm {
+    width: 100%;
 }
 
 .mintPage {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
