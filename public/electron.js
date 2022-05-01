@@ -8,6 +8,9 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    title: "MNTR",
+    resizeable: false,
+    // frame: false, // you're gonna wanna make your own frame to make it look nicer
     webPreferences: {
       nodeIntegration: true,
     },
