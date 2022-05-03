@@ -1,5 +1,5 @@
 import React from 'react'
-import { constants, Contract, ethers } from 'ethers';
+import { Contract, ethers } from 'ethers';
 
 import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
@@ -7,13 +7,18 @@ import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './MintPage.css'
 
-const { app } = require('electron');
-const fs = window.require('fs');
+const { ipcRenderer } = window;
 
 export default function MintPage() {
-  const [profileName, setProfileName] = useState('');
+
+  // consider having one usestate for an obj
+
+  // private info (switch to seperate wallet configs instead of task info)
   const [privateKey, setPrivateKey] = useState('');
   const [RPCURL, setRPCURL] = useState('');
+
+  // task info
+  const [profileName, setProfileName] = useState('');
   const [contractAddress, setContractAddress] = useState('');
   const [contractABI, setContractABI] = useState([]);
   const [price, setPrice] = useState(0);
@@ -24,10 +29,6 @@ export default function MintPage() {
   const [functionName, setFunctionName] = useState('');
   const [parameters, setParameters] = useState([]);
 
-  // might be useful?
-  function isValidPrivateKey() {
-    return ethers.utils.isHexString(privateKey);
-  }
 
   function formatParams(paramArr) {
     let returnStr = "";
@@ -40,27 +41,14 @@ export default function MintPage() {
     return returnStr.slice(0, -2);
   }
 
-  // nothing in this func is useful rn
-  const onSubmit = (e) => {
-    const validPrivateKey = isValidPrivateKey(e.target.value);
-
-    if (validPrivateKey)
-      console.log("Valid input!")
-    else
-      console.log("Invalid input!") // display error or somethin
-
-    e.preventDefault();
+  // might be useful?
+  function isValidPrivateKey() {
+    return ethers.utils.isHexString(privateKey);
   }
 
   const mintButtonEvent = async (e) => {
 
-    // const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-    // const contractABI = ["function publicMint(uint) payable"];
-
-    // const price = 0.08;
-    // const amount = 1;
-
-    // const RPCURL = "http://127.0.0.1:8545/";
+    // have this code in a seperated js file
 
     const Provider = new ethers.providers.JsonRpcProvider(RPCURL)
     const Wallet = new ethers.Wallet(privateKey, Provider);
@@ -73,7 +61,6 @@ export default function MintPage() {
   }
 
   // have a popup asking for profile name
-  // have a popup for success
   const saveButtonEvent = async (e) => {
     
     let toSave = {
@@ -88,13 +75,43 @@ export default function MintPage() {
       parameters: parameters
     }
 
-    fs.writeFileSync(`${profileName}.json`, JSON.stringify(toSave, null, 2));
+    ipcRenderer.invoke('addProfile', toSave).then((result) => {
+      if (result.success) {
+        // popup success message
+        console.log(result.message);
+      }
+      else {
+        // popup fail message
+        console.log(result.message);
+      }
+    });
 
     e.preventDefault();
   }
 
   const loadButtonEvent = async (e) => {
-    
+    const profileToLoad = profileName;
+    // prompt up a textbox that asks for profile name
+    ipcRenderer.invoke('loadProfile', profileToLoad).then((result) => {
+      if (result.success) {
+        // popup success message
+        console.log(result.message);
+
+        setPrivateKey(result.content.privateKey);
+        setRPCURL(result.content.RPCURL);
+        setProfileName(result.content.profileName);
+        setContractAddress(result.content.contractAddress);
+        setContractABI(result.content.contractABI);
+        setPrice(result.content.price);
+        setAmount(result.content.amount);
+        setFunctionName(result.content.functionName);
+        setParameters(result.content.parameters);
+      }
+      else {
+        // popup fail message
+        console.log(result.message);
+      }
+    });    
 
     e.preventDefault();
   }
@@ -104,18 +121,18 @@ export default function MintPage() {
         <Container className="mintInfo">
           <Row>
             <Col>
-              <Form className="PrivateKeyForm" onSubmit={onSubmit}>
+              <Form className="PrivateKeyForm" >
                 <Form.Floating className="mb-3">
-                    <Form.Control id="floatingInputCustom" type="text" placeholder="0x00" onChange={(e) => {setPrivateKey(e.target.value)}}/>
+                    <Form.Control id="floatingInputCustom" type="text" value={privateKey} placeholder="0x00" onChange={(e) => {setPrivateKey(e.target.value)}}/>
                     <Form.Label htmlFor="floatingInputCustom">Private Key</Form.Label>
                 </Form.Floating>
               </Form>
             </Col>
 
             <Col>
-              <Form className="RPCForm" onSubmit={onSubmit}>
+              <Form className="RPCForm" >
                 <Form.Floating className="mb-3">
-                    <Form.Control id="floatingInputCustom" type="text" placeholder="https://" onChange={(e) => {setRPCURL(e.target.value)}}/>
+                    <Form.Control id="floatingInputCustom" type="text" value={RPCURL} placeholder="https://" onChange={(e) => {setRPCURL(e.target.value)}}/>
                     <Form.Label htmlFor="floatingInputCustom">RPC Url</Form.Label>
                 </Form.Floating>
               </Form>
@@ -124,18 +141,18 @@ export default function MintPage() {
 
         <Row className="justify-content-md-center">
           <Col>
-            <Form className="ContractAddressForm" onSubmit={onSubmit}>
+            <Form className="ContractAddressForm" >
               <Form.Floating className="mb-3">
-                  <Form.Control id="floatingInputCustom" type="text" placeholder="0x00" onChange={(e) => {setContractAddress(e.target.value)}}/>
+                  <Form.Control id="floatingInputCustom" type="text" value={contractAddress} placeholder="0x00" onChange={(e) => {setContractAddress(e.target.value)}}/>
                   <Form.Label htmlFor="floatingInputCustom">Contract Address</Form.Label>
               </Form.Floating>
             </Form>
           </Col>
 
           <Col>
-            <Form className="ABIForm" onSubmit={onSubmit}>
+            <Form className="ABIForm" >
               <Form.Floating className="mb-3">
-                  <Form.Control id="floatingInputCustom" type="text" placeholder="[]" onChange={(e) => {setContractABI([e.target.value])}}/>
+                  <Form.Control id="floatingInputCustom" type="text" value={contractABI} placeholder="[]" onChange={(e) => {setContractABI([e.target.value])}}/>
                   <Form.Label htmlFor="floatingInputCustom">Contract ABI</Form.Label>
               </Form.Floating>
             </Form>
@@ -144,45 +161,45 @@ export default function MintPage() {
 
         <Row>
           <Col md="2">
-            <Form className="PriceForm" onSubmit={onSubmit}>
+            <Form className="PriceForm" >
               <Form.Floating className="mb-3">
-                  <Form.Control id="floatingInputCustom" type="text" placeholder="0.2" onChange={(e) => {setPrice(e.target.value)}}/>
+                  <Form.Control id="floatingInputCustom" type="text" value={price} placeholder="0.2" onChange={(e) => {setPrice(e.target.value)}}/>
                   <Form.Label htmlFor="floatingInputCustom">ETH</Form.Label>
               </Form.Floating>
             </Form>
           </Col>
 
           <Col md="2">
-            <Form className="AmountForm" onSubmit={onSubmit}>
+            <Form className="AmountForm" >
               <Form.Floating className="mb-3">
-                  <Form.Control id="floatingInputCustom" type="text" placeholder="1" onChange={(e) => {setAmount(e.target.value)}}/>
+                  <Form.Control id="floatingInputCustom" type="text" value={amount} placeholder="1" onChange={(e) => {setAmount(e.target.value)}}/>
                   <Form.Label htmlFor="floatingInputCustom">Amount</Form.Label>
               </Form.Floating>
             </Form>
           </Col>
 
           <Col md="2">
-            <Form className="FunctionForm" onSubmit={onSubmit}>
+            <Form className="FunctionForm" >
               <Form.Floating className="mb-3">
-                  <Form.Control id="floatingInputCustom" type="text" placeholder="mint" onChange={(e) => {setFunctionName(e.target.value)}}/>
+                  <Form.Control id="floatingInputCustom" type="text" value={functionName} placeholder="mint" onChange={(e) => {setFunctionName(e.target.value)}}/>
                   <Form.Label htmlFor="floatingInputCustom">Function</Form.Label>
               </Form.Floating>
             </Form>
           </Col>
 
           <Col md="2">
-            <Form className="ParamsForm" onSubmit={onSubmit}>
+            <Form className="ParamsForm" >
               <Form.Floating className="mb-3">
-                  <Form.Control id="floatingInputCustom" type="text" placeholder="uint256" onChange={(e) => {setParameters(e.target.value.split(' '))}}/>
+                  <Form.Control id="floatingInputCustom" type="text" value={parameters} placeholder="uint256" onChange={(e) => {setParameters(e.target.value.split(' '))}}/>
                   <Form.Label htmlFor="floatingInputCustom">Params</Form.Label>
               </Form.Floating>
             </Form>
           </Col>
 
           <Col md="2">
-            <Form className="ProfileNameForm" onSubmit={onSubmit}>
+            <Form className="ProfileNameForm" >
               <Form.Floating className="mb-3">
-                  <Form.Control id="floatingInputCustom" type="text" placeholder="profile" onChange={(e) => {setProfileName(e.target.value)}}/>
+                  <Form.Control id="floatingInputCustom" type="text" value={profileName} placeholder="profile" onChange={(e) => {setProfileName(e.target.value)}}/>
                   <Form.Label htmlFor="floatingInputCustom">Profile Name</Form.Label>
               </Form.Floating>
             </Form>
