@@ -2,6 +2,7 @@ import React from 'react'
 import { Contract, ethers } from 'ethers';
 
 import { Button, Form, Container, Row, Col } from 'react-bootstrap';
+import { Link } from "react-router-dom";
 import { useState } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -116,29 +117,36 @@ export default function MintPage() {
     e.preventDefault();
   }
 
+  const saveConfigEvent = async (e) => {
+    ipcRenderer.invoke('editConfig', "").then((result) => {
+      if (result.success) {
+        // popup success message
+        console.log(result.message);
+      }
+      else {
+        // popup fail message
+        console.log(result.message);
+      }
+    });
+  }
+
+  const loadConfigEvent = async (e) => {
+    ipcRenderer.invoke('loadConfig', "").then((result) => {
+      if (result.success) {
+        // popup success message
+        console.log(result.message);
+      }
+      else {
+        // popup fail message
+        console.log(result.message);
+      }
+    });
+  }
+
   return (
+    <>
       <div className="mintPage">
         <Container className="mintInfo">
-          <Row>
-            <Col>
-              <Form className="PrivateKeyForm" >
-                <Form.Floating className="mb-3">
-                    <Form.Control id="floatingInputCustom" type="text" value={privateKey} placeholder="0x00" onChange={(e) => {setPrivateKey(e.target.value)}}/>
-                    <Form.Label htmlFor="floatingInputCustom">Private Key</Form.Label>
-                </Form.Floating>
-              </Form>
-            </Col>
-
-            <Col>
-              <Form className="RPCForm" >
-                <Form.Floating className="mb-3">
-                    <Form.Control id="floatingInputCustom" type="text" value={RPCURL} placeholder="https://" onChange={(e) => {setRPCURL(e.target.value)}}/>
-                    <Form.Label htmlFor="floatingInputCustom">RPC Url</Form.Label>
-                </Form.Floating>
-              </Form>
-            </Col>
-        </Row>
-
         <Row className="justify-content-md-center">
           <Col>
             <Form className="ContractAddressForm" >
@@ -225,5 +233,19 @@ export default function MintPage() {
           </Col>
         </Row>
       </div>
+      <div className="bottomPage">
+        <Container>
+          <Row className="justify-content-md-center">
+            <Col md="auto">
+              <Link to="/settings">
+                <Button>
+                  Settings Page
+                </Button>
+              </Link>
+            </Col>
+          </Row>
+        </Container>
+      </div>
+    </>
   )
 }

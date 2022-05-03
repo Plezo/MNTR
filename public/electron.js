@@ -3,7 +3,6 @@ const fs = require('fs');
 
 const { app, ipcMain, BrowserWindow } = require('electron');
 const isDev = require('electron-is-dev');
-const { consumers } = require('stream');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -71,6 +70,10 @@ ipcMain.handle('addProfile', async (event, obj) => {
 
 ipcMain.handle('loadProfile', async (event, profileName) => {
   const file = `${app.getPath('userData')}/profiles.json`;
+
+  if (!fs.existsSync(file))
+    return {"success": false, "message": "No profiles created!"};
+
   const jsonParsed = JSON.parse(fs.readFileSync(file));
 
   try {
@@ -86,3 +89,53 @@ ipcMain.handle('loadProfile', async (event, profileName) => {
     return {"success": false, "message": "Failed to load profile!"};
   }
 });
+
+// wip
+ipcMain.handle('editConfig', async (event, obj) => {
+  const file = `${app.getPath('userData')}\\config.json`;
+  const defaultConfig = {
+    "wallets": [],
+    "RPCURL": ""
+  }
+
+  if (!fs.existsSync(file))
+    fs.writeFileSync(file, JSON.stringify(defaultConfig), null, 2);
+
+  const jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  try {
+    if (jsonParsed.hasOwnProperty(profileName)) {
+      return {"success": true, "message": "Loaded file!", "content": jsonParsed[profileName]};
+    }
+    else {
+      return {"success": false, "message": `Profile ${profileName} doesn't exist!`};
+    }
+  }
+  catch(err) {
+    console.error(err);
+    return {"success": false, "message": "Failed to load profile!"};
+  }
+})
+
+// wip
+ipcMain.handle('loadConfig', async (event, obj) => {
+  const file = `${app.getPath('userData')}\\config.json`;
+
+  if (!fs.existsSync(file))
+    fs.writeFileSync(file, JSON.stringify(defaultConfig), null, 2);
+
+  const jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  try {
+    if (jsonParsed.hasOwnProperty(profileName)) {
+      return {"success": true, "message": "Loaded file!", "content": jsonParsed[profileName]};
+    }
+    else {
+      return {"success": false, "message": `Profile ${profileName} doesn't exist!`};
+    }
+  }
+  catch(err) {
+    console.error(err);
+    return {"success": false, "message": "Failed to load profile!"};
+  }
+})
