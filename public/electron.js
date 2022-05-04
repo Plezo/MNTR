@@ -98,44 +98,54 @@ ipcMain.handle('editConfig', async (event, obj) => {
     "RPCURL": ""
   }
 
-  if (!fs.existsSync(file))
-    fs.writeFileSync(file, JSON.stringify(defaultConfig), null, 2);
+  let jsonParsed;
 
-  const jsonParsed = JSON.parse(fs.readFileSync(file));
+  if (!fs.existsSync(file))
+    jsonParsed = defaultConfig;
+  else
+    jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  for (let i = 0; i < jsonParsed.wallets.length; i++) {
+    if (jsonParsed.wallets[i].walletName == obj.walletName)
+      return {"success": false, "message": "Wallet name already used!"};
+
+    if (jsonParsed.wallets[i].privateKey == obj.privateKey)
+      return {"success": false, "message": `Private key already used for ${jsonParsed.wallets[i].walletName}!`};
+  }
 
   try {
-    if (jsonParsed.hasOwnProperty(profileName)) {
-      return {"success": true, "message": "Loaded file!", "content": jsonParsed[profileName]};
-    }
-    else {
-      return {"success": false, "message": `Profile ${profileName} doesn't exist!`};
-    }
+    jsonParsed.wallets.push({privateKey: obj.privateKey, walletName: obj.walletName});
+
+    fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
+    return {"success": true, "message": `Added wallet ${obj.walletName}!`};
   }
   catch(err) {
     console.error(err);
-    return {"success": false, "message": "Failed to load profile!"};
+    return {"success": false, "message": "Failed to add wallet!"};
   }
 })
 
-// wip
-ipcMain.handle('loadConfig', async (event, obj) => {
+ipcMain.handle('changeRPC', async (event, RPCURL) => {
   const file = `${app.getPath('userData')}\\config.json`;
+  const defaultConfig = {
+    "wallets": [],
+    "RPCURL": ""
+  }
+
+  let jsonParsed;
 
   if (!fs.existsSync(file))
-    fs.writeFileSync(file, JSON.stringify(defaultConfig), null, 2);
-
-  const jsonParsed = JSON.parse(fs.readFileSync(file));
+    jsonParsed = defaultConfig
+  else
+    jsonParsed = JSON.parse(fs.readFileSync(file));
 
   try {
-    if (jsonParsed.hasOwnProperty(profileName)) {
-      return {"success": true, "message": "Loaded file!", "content": jsonParsed[profileName]};
-    }
-    else {
-      return {"success": false, "message": `Profile ${profileName} doesn't exist!`};
-    }
+    jsonParsed["RPCURL"] = RPCURL;
+    fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
+    return {"success": true, "message": "Changed RPC!"};
   }
   catch(err) {
     console.error(err);
-    return {"success": false, "message": "Failed to load profile!"};
+    return {"success": false, "message": "Failed to change RPC!"};
   }
 })
