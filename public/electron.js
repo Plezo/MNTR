@@ -49,7 +49,7 @@ Adds profile object to profiles.json
 Will overwrite profile if same name
 Create profiles.json if doesnt exist
 */
-ipcMain.handle('addProfile', async (event, obj) => {
+ipcMain.handle('addProfile', (event, obj) => {
   const file = `${app.getPath('userData')}\\profiles.json`;
 
   if (!fs.existsSync(file))
@@ -68,7 +68,7 @@ ipcMain.handle('addProfile', async (event, obj) => {
   }
 });
 
-ipcMain.handle('loadProfile', async (event, profileName) => {
+ipcMain.handle('loadProfile', (event, profileName) => {
   const file = `${app.getPath('userData')}/profiles.json`;
 
   if (!fs.existsSync(file))
@@ -90,12 +90,12 @@ ipcMain.handle('loadProfile', async (event, profileName) => {
   }
 });
 
-// wip
-ipcMain.handle('editConfig', async (event, obj) => {
+// check if wallet is valid
+ipcMain.handle('addWallet', (event, obj) => {
   const file = `${app.getPath('userData')}\\config.json`;
   const defaultConfig = {
-    "wallets": [],
-    "RPCURL": ""
+    "RPCURL": "",
+    "wallets": []
   }
 
   let jsonParsed;
@@ -105,6 +105,7 @@ ipcMain.handle('editConfig', async (event, obj) => {
   else
     jsonParsed = JSON.parse(fs.readFileSync(file));
 
+  // Checks if wallet name/private key already saved
   for (let i = 0; i < jsonParsed.wallets.length; i++) {
     if (jsonParsed.wallets[i].walletName == obj.walletName)
       return {"success": false, "message": "Wallet name already used!"};
@@ -117,7 +118,7 @@ ipcMain.handle('editConfig', async (event, obj) => {
     jsonParsed.wallets.push({privateKey: obj.privateKey, walletName: obj.walletName});
 
     fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
-    return {"success": true, "message": `Added wallet ${obj.walletName}!`};
+    return {"success": true, "message": `Added wallet ${obj.walletName}!`, "content": jsonParsed};
   }
   catch(err) {
     console.error(err);
@@ -125,7 +126,25 @@ ipcMain.handle('editConfig', async (event, obj) => {
   }
 })
 
-ipcMain.handle('changeRPC', async (event, RPCURL) => {
+ipcMain.handle('getConfig', (event, obj) => {
+  const file = `${app.getPath('userData')}\\config.json`;
+  const defaultConfig = {
+    RPCURL: "",
+    wallets: []
+  }
+
+  let jsonParsed;
+
+  if (!fs.existsSync(file))
+    jsonParsed = defaultConfig;
+  else
+    jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  return {"success": true, "message": `Found config file!`, "content": jsonParsed};
+})
+
+// check if input is a url
+ipcMain.handle('changeRPC', (event, RPCURL) => {
   const file = `${app.getPath('userData')}\\config.json`;
   const defaultConfig = {
     "wallets": [],

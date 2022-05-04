@@ -1,9 +1,8 @@
 import React from 'react'
-import { Contract, ethers } from 'ethers';
 
-import { Button, Form, FormControl, FloatingLabel, InputGroup, Container, Row, Col } from 'react-bootstrap';
+import { Button, Form, FloatingLabel, InputGroup, Container, Row, Col, Table } from 'react-bootstrap';
 import { Link } from "react-router-dom";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './SettingsPage.css'
@@ -12,13 +11,24 @@ const { ipcRenderer } = window;
 
 export default function SettingsPage() {
 
-  // consider having one usestate for an obj
-
-  // private info (switch to seperate wallet configs instead of task info)
-  const [privateKey, setPrivateKey] = useState('');
+  const [config, setConfig] = useState({RPCURL: "", wallets: []});
   const [RPCURL, setRPCURL] = useState('');
+  const [privateKey, setPrivateKey] = useState('');
   const [walletName, setWalletName] = useState('');
 
+  useEffect(() => {
+    ipcRenderer.invoke('getConfig').then((result) => {
+      if (result.success) {
+        // popup success message  
+        setConfig(result.content);
+        console.log(result.message);
+      }
+      else {
+        // popup fail message
+        console.log(result.message);
+      }
+    });
+  }, []);
 
   // add checks for if input is empty
   const addWalletEvent = (e) => {
@@ -27,9 +37,10 @@ export default function SettingsPage() {
       walletName: walletName
     }
 
-    ipcRenderer.invoke('editConfig', obj).then((result) => {
+    ipcRenderer.invoke('addWallet', obj).then((result) => {
       if (result.success) {
         // popup success message
+        setConfig(result.content);
         console.log(result.message);
       }
       else {
@@ -84,12 +95,32 @@ export default function SettingsPage() {
                 </Form>
               </Col>
             </Row>
-            <Row className="justify-content-md-center">
+            <Row className="justify-content-md-center mb-3">
               <Col md="auto">
                 <Button variant="success" size="lg" onClick={addWalletEvent}>
                   Save Wallet
                 </Button>
               </Col>
+            </Row>
+            <Row className="mb-3">
+              <Table className="walletsTable" responsive="sm">
+                <thead>
+                  <tr>
+                    <th>Wallet Name</th>
+                    <th>Private Key</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {config.wallets.map((item) => {
+                    return (
+                      <tr key={item.walletName}>
+                        <td>{ item.walletName }</td>
+                        <td>{ item.privateKey }</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </Table>
             </Row>
           </Container>
         </div>
