@@ -1,20 +1,18 @@
-import { Dropdown, Form } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import React from 'react';
-import { useState } from 'react';
 
 export default function Task(props) {
-
     return (
         <>
-            <tr key={props.item.taskName}>
+            <tr>
                 <td>
-                    {props.taskName}
+                    {props.item.taskName}
                 </td>
                 <td>
-                    {props.profileName}
+                    {props.item.profileName}
                 </td>
                 <td>
-                    {props.walletName}
+                    {props.item.walletName}
                 </td>
                 <td>
                     temp
