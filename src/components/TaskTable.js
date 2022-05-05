@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { Table } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
 
 import Task from './Task'
 
