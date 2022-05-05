@@ -1,0 +1,9 @@
+.profileNameInput {
+    border: 0;
+    box-shadow: none !important;
+    outline: none;
+}
+
+.profileNameLabel {
+    font-size: 15px;
+}

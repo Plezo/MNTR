@@ -3,6 +3,18 @@ const fs = require('fs');
 
 const { app, ipcMain, BrowserWindow } = require('electron');
 const isDev = require('electron-is-dev');
+const Web3 = require('web3');
+
+function formatParams(paramArr) {
+  let returnStr = "";
+  for (let i = 0; i < paramArr.length; i++) {
+    if (paramArr[i] === 'uint') paramArr[i] = 'uint256';
+
+    returnStr += `${paramArr[i]}, `;
+  }
+
+  return returnStr.slice(0, -2);
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -90,6 +102,19 @@ ipcMain.handle('loadProfile', (event, profileName) => {
   }
 });
 
+ipcMain.handle('getProfiles', (event) => {
+  const file = `${app.getPath('userData')}\\profiles.json`;
+
+  let jsonParsed;
+
+  if (!fs.existsSync(file))
+    fs.writeFileSync(file, JSON.stringify({}), null, 2);
+  else
+    jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  return {"success": true, "message": `Found profiles file!`, "content": jsonParsed};
+})
+
 // check if wallet is valid
 ipcMain.handle('addWallet', (event, obj) => {
   const file = `${app.getPath('userData')}\\config.json`;
@@ -126,7 +151,7 @@ ipcMain.handle('addWallet', (event, obj) => {
   }
 })
 
-ipcMain.handle('getConfig', (event, obj) => {
+ipcMain.handle('getConfig', (event) => {
   const file = `${app.getPath('userData')}\\config.json`;
   const defaultConfig = {
     RPCURL: "",
@@ -167,4 +192,64 @@ ipcMain.handle('changeRPC', (event, RPCURL) => {
     console.error(err);
     return {"success": false, "message": "Failed to change RPC!"};
   }
+})
+
+ipcMain.handle('addTask', (event, obj) => {
+  const file = `${app.getPath('userData')}\\tasks.json`;
+  const defaultTasks = {
+    tasks: []
+  }
+
+  let jsonParsed;
+
+  if (!fs.existsSync(file))
+    jsonParsed = defaultTasks;
+  else
+    jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  // Checks if wallet name/private key already saved
+  for (let i = 0; i < jsonParsed.tasks.length; i++) {
+    if (jsonParsed.tasks[i].taskName == obj.taskName)
+      return {"success": false, "message": "Task name already used!"};
+
+    if (jsonParsed.tasks[i].walletName == obj.walletName)
+      return {"success": false, "message": `Private key already used for another task: ${jsonParsed.tasks[i].taskName}!`};
+  }
+
+  try {
+    jsonParsed.tasks.push({taskName: obj.taskName, profileName: obj.profileName, walletName: obj.walletName});
+
+    fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
+    return {"success": true, "message": `Added task ${obj.walletName}!`, "content": jsonParsed};
+  }
+  catch(err) {
+    console.error(err);
+    return {"success": false, "message": "Failed to add wallet!"};
+  }
+})
+
+ipcMain.handle('getTasks', (event) => {
+  const file = `${app.getPath('userData')}\\tasks.json`;
+  const defaultTasks = {
+    tasks: []
+  }
+
+  let jsonParsed;
+
+  if (!fs.existsSync(file))
+    jsonParsed = defaultTasks;
+  else
+    jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  return {"success": true, "message": `Found tasks file!`, "content": jsonParsed};
+})
+
+ipcMain.handle('callETHFunction', (event, data) => {
+  const web3 = new Web3(data.RPCURL);
+
+  const contract = new web3.eth.Contract(data.interface, data.contractAddress);
+
+  // myContract.methods['myMethod(uint256)'](123) <- example
+  const tx = contract.methods[`${data.function}(${formatParams(data.params)})`](data.args).call({gasPrice: data.gasPrice, value: data.price});
+  tx.sign(data.privateKey);
 })

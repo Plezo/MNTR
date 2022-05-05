@@ -1,0 +1,14 @@
+.taskNameInput {
+    border: 0;
+    box-shadow: none !important;
+    outline: none;
+}
+
+.taskNameLabel {
+    font-size: 15px;
+}
+
+.createTaskDropdown {
+    max-height: 180px;
+    overflow-y: scroll;
+}

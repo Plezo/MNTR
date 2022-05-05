@@ -113,7 +113,7 @@ export default function SettingsPage() {
                 <tbody>
                   {config.wallets.map((item) => {
                     return (
-                      <tr key={item.walletName}>
+                      <tr key={ item.walletName }>
                         <td>{ item.walletName }</td>
                         <td>{ item.privateKey }</td>
                       </tr>
