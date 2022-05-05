@@ -18,7 +18,6 @@ export default function CreateTask(props) {
     const handleShow = () => setShow(true);
 
     const saveButtonEvent = async (e) => {
-    
         let toSave = {
           taskName: taskName,
           profileName: profileName,
@@ -68,7 +67,7 @@ export default function CreateTask(props) {
             </Modal.Header>
             <Modal.Body>
                 <Container>
-                    <Row className="mb-3">
+                    <Row>
                         <Col>
                         <Dropdown>
                             <Dropdown.Toggle variant="primary">
@@ -96,7 +95,9 @@ export default function CreateTask(props) {
                             <Dropdown.Menu className="createTaskDropdown">
                                 {props.config.wallets.map((item) => {
                                     return (
-                                        <Dropdown.Item onClick={() => setWalletName(item.walletName)}> {item.walletName} </Dropdown.Item>
+                                        <Dropdown.Item
+                                        key={item.walletName} 
+                                        onClick={() => setWalletName(item.walletName)}> {item.walletName} </Dropdown.Item>
                                     )
                                 })}
                             </Dropdown.Menu>
