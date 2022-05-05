@@ -22,7 +22,7 @@ export default function CreateTask(props) {
         let toSave = {
           taskName: taskName,
           profileName: profileName,
-          walletName, walletName
+          walletName: walletName
         }
     
         ipcRenderer.invoke('addTask', toSave).then((result) => {
@@ -78,7 +78,10 @@ export default function CreateTask(props) {
                             <Dropdown.Menu className="createTaskDropdown">
                                 {Object.keys(props.profiles).map((item) => {
                                     return (
-                                        <Dropdown.Item onClick={() => setProfileName(item)}> {item} </Dropdown.Item>
+                                        <Dropdown.Item 
+                                        key={item} 
+                                        onClick={() => setProfileName(item)}
+                                        > {item} </Dropdown.Item>
                                     )
                                 })}
                             </Dropdown.Menu>
