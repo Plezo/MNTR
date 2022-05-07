@@ -7,7 +7,7 @@ import './CreateProfile.css'
 
 const { ipcRenderer } = window;
 
-export default function CreateProfile() {
+export default function CreateProfile(props) {
     const [show, setShow] = useState(false);
 
     const [profileName, setProfileName] = useState('');
@@ -40,6 +40,7 @@ export default function CreateProfile() {
           if (result.success) {
             // popup success message
             console.log(result.message);
+            props.setWallets(result.content);
           }
           else {
             // popup fail message

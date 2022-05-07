@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 
 import CreateProfile from '../components/CreateProfile';
 import CreateTask from '../components/CreateTask';
+import CreateWallet from '../components/CreateWallet';
 import TaskTable from '../components/TaskTable';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,16 +15,38 @@ import './MintPage.css'
 const { ipcRenderer } = window;
 
 export default function MintPage() {
-
-  const [config, setConfig] = useState({RPCURL: "", wallets: []});
-  const [profiles, setProfiles] = useState({temp: {profileName: ""}});
+  const [wallets, setWallets] = useState({});
+  const [profiles, setProfiles] = useState({});
   const [tasks, setTasks] = useState({tasks: []});
 
+  const handleProfileChange = (newProfiles) => {
+    setProfiles(newProfiles);
+  }
+
+  const handleTaskChange = (newTasks) => {
+    setTasks(newTasks);
+  }
+
+  const handleWalletsChange = (newWallets) => {
+    setWallets(newWallets);
+  }
+
+  const runAllTasks = () => {
+    ipcRenderer.invoke('runTasks', {wallets: wallets, profiles: profiles, tasks: tasks}).then((result) => {
+      if (result.success) {
+        console.log(result.message)
+      }
+      else {
+        console.log(result.message)
+      }
+    });
+  }
+
   useEffect(() => {
-    ipcRenderer.invoke('getConfig').then((result) => {
+    ipcRenderer.invoke('getWallets').then((result) => {
         if (result.success) {
           // popup success message  
-          setConfig(result.content);
+          setWallets(result.content);
           console.log(result.message);
         }
         else {
@@ -64,21 +87,24 @@ export default function MintPage() {
         <Container className="mintInfo">
           <Row className="justify-content-md-center mb-3">
             <Col md="auto">
-              <Button variant="success" size="lg">
-                Mint
+              <Button variant="success" size="lg" onClick={runAllTasks}>
+                Run All
               </Button>
             </Col>
             <Col md="auto">
-              <CreateProfile />
+              <CreateProfile profile={profiles} setProfile={handleProfileChange} />
             </Col>
             <Col md="auto">
-              <CreateTask tasks={tasks} profiles={profiles} config={config}/>
+              <CreateTask tasks={tasks} setTasks={handleTaskChange} profiles={profiles} wallets={wallets} />
+            </Col>
+            <Col md="auto">
+              <CreateWallet wallets={wallets} setWallets={handleWalletsChange} />
             </Col>
           </Row>
-          
+  
           <Row className="mb-3">
             <Col>
-              <TaskTable tasks={tasks} profiles={profiles} config={config} />
+              <TaskTable tasks={tasks} />
             </Col>
           </Row>
         </Container>

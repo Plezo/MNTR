@@ -56,6 +56,16 @@ app.on('activate', () => {
   }
 });
 
+// wip
+function isValidPrivateKey() {
+  return true;
+}
+
+// wip
+function isValidRPCURL() {
+  return true;
+}
+
 /*
 Adds profile object to profiles.json
 Will overwrite profile if same name
@@ -72,11 +82,11 @@ ipcMain.handle('addProfile', (event, obj) => {
   try {
     jsonParsed[obj.profileName] = obj;
     fs.writeFileSync(file, JSON.stringify(jsonParsed, null, 2));
-    return {"success": true, "message": `Saved profile ${obj.profileName}!`};
+    return {"success": true, "message": `Saved profile ${obj.profileName}!`, "content": jsonParsed};
   }
   catch(err) {
     console.error(err);
-    return {"success": false, "message": "Failed to save profile!"};
+    return {"success": false, "message": "Failed to save profile!", "content": {}};
   }
 });
 
@@ -115,32 +125,31 @@ ipcMain.handle('getProfiles', (event) => {
   return {"success": true, "message": `Found profiles file!`, "content": jsonParsed};
 })
 
-// check if wallet is valid
 ipcMain.handle('addWallet', (event, obj) => {
-  const file = `${app.getPath('userData')}\\config.json`;
-  const defaultConfig = {
-    "RPCURL": "",
-    "wallets": []
-  }
 
+  if (obj.walletName === "" || !isValidPrivateKey(obj.privateKey) || !isValidRPCURL(obj.RPCURL))
+    return {"success": false, "message": "Wallet name must not be empty, private key must be valid, and RPCURL must be valid!"};
+
+  const file = `${app.getPath('userData')}\\wallets.json`;
   let jsonParsed;
 
   if (!fs.existsSync(file))
-    jsonParsed = defaultConfig;
+    jsonParsed = {};
   else
     jsonParsed = JSON.parse(fs.readFileSync(file));
 
-  // Checks if wallet name/private key already saved
-  for (let i = 0; i < jsonParsed.wallets.length; i++) {
-    if (jsonParsed.wallets[i].walletName == obj.walletName)
-      return {"success": false, "message": "Wallet name already used!"};
+  // Checks if wallet name already saved
+  if (jsonParsed.hasOwnProperty(obj.walletName))
+    return {"success": false, "message": "Wallet name already used!"};
 
-    if (jsonParsed.wallets[i].privateKey == obj.privateKey)
-      return {"success": false, "message": `Private key already used for ${jsonParsed.wallets[i].walletName}!`};
+  // Checks if private key already saved
+  for (const [key, value] of Object.entries(jsonParsed)) {
+    if (value.privateKey == obj.privateKey)
+      return {"success": false, "message": `Private key already used for ${key}!`};
   }
 
   try {
-    jsonParsed.wallets.push({privateKey: obj.privateKey, walletName: obj.walletName});
+    jsonParsed[obj.walletName] = {walletName: obj.walletName, RPCURL: obj.RPCURL, privateKey: obj.privateKey};
 
     fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
     return {"success": true, "message": `Added wallet ${obj.walletName}!`, "content": jsonParsed};
@@ -151,47 +160,17 @@ ipcMain.handle('addWallet', (event, obj) => {
   }
 })
 
-ipcMain.handle('getConfig', (event) => {
-  const file = `${app.getPath('userData')}\\config.json`;
-  const defaultConfig = {
-    RPCURL: "",
-    wallets: []
-  }
+ipcMain.handle('getWallets', (event) => {
+  const file = `${app.getPath('userData')}\\wallets.json`;
 
   let jsonParsed;
 
   if (!fs.existsSync(file))
-    jsonParsed = defaultConfig;
+    jsonParsed = {};
   else
     jsonParsed = JSON.parse(fs.readFileSync(file));
 
-  return {"success": true, "message": `Found config file!`, "content": jsonParsed};
-})
-
-// check if input is a url
-ipcMain.handle('changeRPC', (event, RPCURL) => {
-  const file = `${app.getPath('userData')}\\config.json`;
-  const defaultConfig = {
-    "wallets": [],
-    "RPCURL": ""
-  }
-
-  let jsonParsed;
-
-  if (!fs.existsSync(file))
-    jsonParsed = defaultConfig
-  else
-    jsonParsed = JSON.parse(fs.readFileSync(file));
-
-  try {
-    jsonParsed["RPCURL"] = RPCURL;
-    fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
-    return {"success": true, "message": "Changed RPC!"};
-  }
-  catch(err) {
-    console.error(err);
-    return {"success": false, "message": "Failed to change RPC!"};
-  }
+  return {"success": true, "message": `Found wallets file!`, "content": jsonParsed};
 })
 
 ipcMain.handle('addTask', (event, obj) => {
@@ -217,7 +196,7 @@ ipcMain.handle('addTask', (event, obj) => {
   }
 
   try {
-    jsonParsed.tasks.push({taskName: obj.taskName, profileName: obj.profileName, walletName: obj.walletName});
+    jsonParsed.tasks.push(obj);
 
     fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
     return {"success": true, "message": `Added task ${obj.walletName}!`, "content": jsonParsed};
@@ -244,10 +223,23 @@ ipcMain.handle('getTasks', (event) => {
   return {"success": true, "message": `Found tasks file!`, "content": jsonParsed};
 })
 
-ipcMain.handle('callETHFunction', (event, data) => {
-  const web3 = new Web3(data.RPCURL);
+ipcMain.handle('runTasks', (event, data) => {
+  for (let i = 0; i < data.tasks.tasks.length; i++) {
+    const RPCURL = data.wallets[data.tasks.tasks[i].walletName].RPCURL;
+    const privateKey = data.wallets[data.tasks.tasks[i].walletName].privateKey;
+    const web3 = new Web3(RPCURL);
+    web3.eth.accounts.wallet.add(privateKey);
+    const account = web3.eth.accounts.wallet[0].address;
 
-  const contract = new web3.eth.Contract(data.interface, data.contractAddress);
+    const profile = data.profiles[data.tasks.tasks[i].profileName];
+    const contract = new web3.eth.Contract(profile.contractABI, profile.contractAddress);
+    const tx = await contract.methods[`${profile.functionName}(${formatParams(profile.parameters)})`](profile.amount)
+      .call({
+        from: account,
+        // gasPrice: data.args.gasPrice, 
+        value: profile.price
+      });
+  }
 
   // myContract.methods['myMethod(uint256)'](123) <- example
   const tx = contract.methods[`${data.function}(${formatParams(data.params)})`](data.args).call({gasPrice: data.gasPrice, value: data.price});

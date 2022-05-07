@@ -18,7 +18,7 @@ export default function CreateTask(props) {
     const handleShow = () => setShow(true);
 
     const saveButtonEvent = async (e) => {
-        let toSave = {
+        const toSave = {
           taskName: taskName,
           profileName: profileName,
           walletName: walletName
@@ -28,13 +28,13 @@ export default function CreateTask(props) {
           if (result.success) {
             // popup success message
             console.log(result.message);
+            props.setTasks(result.content);
           }
           else {
             // popup fail message
             console.log(result.message);
           }
         });
-    
         e.preventDefault();
     }
 
@@ -93,11 +93,11 @@ export default function CreateTask(props) {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu className="createTaskDropdown">
-                                {props.config.wallets.map((item) => {
+                                {Object.keys(props.wallets).map((item) => {
                                     return (
                                         <Dropdown.Item
-                                        key={item.walletName} 
-                                        onClick={() => setWalletName(item.walletName)}> {item.walletName} </Dropdown.Item>
+                                        key={item} 
+                                        onClick={() => setWalletName(item)}> {item} </Dropdown.Item>
                                     )
                                 })}
                             </Dropdown.Menu>

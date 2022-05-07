@@ -1,0 +1,9 @@
+.walletNameInput {
+    border: 0;
+    box-shadow: none !important;
+    outline: none;
+}
+
+.walletNameLabel {
+    font-size: 15px;
+}
