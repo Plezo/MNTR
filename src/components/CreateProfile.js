@@ -40,7 +40,7 @@ export default function CreateProfile(props) {
           if (result.success) {
             // popup success message
             console.log(result.message);
-            props.setWallets(result.content);
+            props.setProfiles(result.content);
           }
           else {
             // popup fail message

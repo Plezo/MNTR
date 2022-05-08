@@ -19,7 +19,7 @@ export default function MintPage() {
   const [profiles, setProfiles] = useState({});
   const [tasks, setTasks] = useState({tasks: []});
 
-  const handleProfileChange = (newProfiles) => {
+  const handleProfilesChange = (newProfiles) => {
     setProfiles(newProfiles);
   }
 
@@ -92,7 +92,7 @@ export default function MintPage() {
               </Button>
             </Col>
             <Col md="auto">
-              <CreateProfile profile={profiles} setProfile={handleProfileChange} />
+              <CreateProfile profile={profiles} setProfiles={handleProfilesChange} />
             </Col>
             <Col md="auto">
               <CreateTask tasks={tasks} setTasks={handleTaskChange} profiles={profiles} wallets={wallets} />

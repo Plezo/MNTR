@@ -82,7 +82,7 @@ export default function CreateProfile(props) {
                         <Col>
                         <Form>
                             <Form.Floating>
-                                <Form.Control id="floatingInputCustom" type="text" placeholder="0x00" onChange={(e) => {setPrivateKey([e.target.value])}}/>
+                                <Form.Control id="floatingInputCustom" type="text" placeholder="0x00" onChange={(e) => {setPrivateKey(e.target.value)}}/>
                                 <Form.Label htmlFor="floatingInputCustom">Private Key</Form.Label>
                             </Form.Floating>
                         </Form>

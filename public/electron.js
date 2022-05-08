@@ -223,7 +223,7 @@ ipcMain.handle('getTasks', (event) => {
   return {"success": true, "message": `Found tasks file!`, "content": jsonParsed};
 })
 
-ipcMain.handle('runTasks', (event, data) => {
+ipcMain.handle('runTasks', async (event, data) => {
   for (let i = 0; i < data.tasks.tasks.length; i++) {
     const RPCURL = data.wallets[data.tasks.tasks[i].walletName].RPCURL;
     const privateKey = data.wallets[data.tasks.tasks[i].walletName].privateKey;
@@ -233,15 +233,12 @@ ipcMain.handle('runTasks', (event, data) => {
 
     const profile = data.profiles[data.tasks.tasks[i].profileName];
     const contract = new web3.eth.Contract(profile.contractABI, profile.contractAddress);
-    const tx = await contract.methods[`${profile.functionName}(${formatParams(profile.parameters)})`](profile.amount)
-      .call({
-        from: account,
-        // gasPrice: data.args.gasPrice, 
-        value: profile.price
-      });
+    const tx = await contract.methods[`${profile.functionName}(${profile.parameters})`](profile.amount);
+    const gasEstimate = await tx.estimateGas();
+    const sent = await tx.send({from: account, gas: gasEstimate, value: Web3.utils.toWei(profile.price, 'ether')});
   }
 
   // myContract.methods['myMethod(uint256)'](123) <- example
-  const tx = contract.methods[`${data.function}(${formatParams(data.params)})`](data.args).call({gasPrice: data.gasPrice, value: data.price});
-  tx.sign(data.privateKey);
+  // const tx = contract.methods[`${data.function}(${formatParams(data.params)})`](data.args).call({gasPrice: data.gasPrice, value: data.price});
+  // tx.sign(data.privateKey);
 })
