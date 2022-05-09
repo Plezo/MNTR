@@ -93,7 +93,7 @@ export default function CreateTask(props) {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu className="createTaskDropdown">
-                                {Object.keys(props.wallets).map((item) => {
+                                {Object.keys(props.wallets.wallets).map((item) => {
                                     return (
                                         <Dropdown.Item
                                         key={item} 

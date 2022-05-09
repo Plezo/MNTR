@@ -134,7 +134,7 @@ ipcMain.handle('addWallet', (event, obj) => {
   let jsonParsed;
 
   if (!fs.existsSync(file))
-    jsonParsed = {};
+    jsonParsed = {'RPCURL': '', "wallets": {}};
   else
     jsonParsed = JSON.parse(fs.readFileSync(file));
 
@@ -149,7 +149,8 @@ ipcMain.handle('addWallet', (event, obj) => {
   }
 
   try {
-    jsonParsed[obj.walletName] = {walletName: obj.walletName, RPCURL: obj.RPCURL, privateKey: obj.privateKey};
+    if (obj.RPCURL != '') jsonParsed['RPCURL'] = obj.RPCURL;
+    jsonParsed.wallets[obj.walletName] = {walletName: obj.walletName, privateKey: obj.privateKey};
 
     fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
     return {"success": true, "message": `Added wallet ${obj.walletName}!`, "content": jsonParsed};
@@ -224,12 +225,14 @@ ipcMain.handle('getTasks', (event) => {
 })
 
 ipcMain.handle('runTasks', async (event, data) => {
+  // check if rpcurl is not empty
+  const RPCURL = data.wallets.RPCURL;
+  const web3 = new Web3(RPCURL);
+
   for (let i = 0; i < data.tasks.tasks.length; i++) {
-    const RPCURL = data.wallets[data.tasks.tasks[i].walletName].RPCURL;
-    const privateKey = data.wallets[data.tasks.tasks[i].walletName].privateKey;
-    const web3 = new Web3(RPCURL);
+    const privateKey = data.wallets.wallets[data.tasks.tasks[i].walletName].privateKey;
     web3.eth.accounts.wallet.add(privateKey);
-    const account = web3.eth.accounts.wallet[0].address;
+    const account = web3.eth.accounts.wallet[i].address;
 
     const profile = data.profiles[data.tasks.tasks[i].profileName];
     const contract = new web3.eth.Contract(profile.contractABI, profile.contractAddress);

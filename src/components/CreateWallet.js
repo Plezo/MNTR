@@ -19,17 +19,19 @@ export default function CreateProfile(props) {
 
     const saveButtonEvent = async (e) => {
     
-        let toSave = {
-            walletName: walletName,
+        let walletToAdd = {
             RPCURL: RPCURL,
+            walletName: walletName,
             privateKey: privateKey
         }
     
-        ipcRenderer.invoke('addWallet', toSave).then((result) => {
+        ipcRenderer.invoke('addWallet', walletToAdd).then((result) => {
           if (result.success) {
             // popup success message
             console.log(result.message);
-            props.addWallet(result.content);
+
+            // result.content is the new editted json
+            props.setWallets(result.content);
           }
           else {
             // popup fail message
