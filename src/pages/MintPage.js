@@ -15,7 +15,7 @@ import './MintPage.css'
 const { ipcRenderer } = window;
 
 export default function MintPage() {
-  const [wallets, setWallets] = useState({});
+  const [wallets, setWallets] = useState({'RPCURL': '', "wallets": {}});
   const [profiles, setProfiles] = useState({});
   const [tasks, setTasks] = useState({tasks: []});
 
@@ -104,7 +104,7 @@ export default function MintPage() {
   
           <Row className="mb-3">
             <Col>
-              <TaskTable tasks={tasks} />
+              <TaskTable wallets={wallets} profiles={profiles} tasks={tasks} />
             </Col>
           </Row>
         </Container>

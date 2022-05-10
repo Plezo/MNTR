@@ -167,7 +167,7 @@ ipcMain.handle('getWallets', (event) => {
   let jsonParsed;
 
   if (!fs.existsSync(file))
-    jsonParsed = {};
+    jsonParsed = {'RPCURL': '', "wallets": {}};
   else
     jsonParsed = JSON.parse(fs.readFileSync(file));
 
@@ -240,8 +240,4 @@ ipcMain.handle('runTasks', async (event, data) => {
     const gasEstimate = await tx.estimateGas();
     const sent = await tx.send({from: account, gas: gasEstimate, value: Web3.utils.toWei(profile.price, 'ether')});
   }
-
-  // myContract.methods['myMethod(uint256)'](123) <- example
-  // const tx = contract.methods[`${data.function}(${formatParams(data.params)})`](data.args).call({gasPrice: data.gasPrice, value: data.price});
-  // tx.sign(data.privateKey);
 })

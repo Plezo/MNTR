@@ -20,7 +20,7 @@ export default function TaskTable(props) {
             <tbody>
                 {props.tasks.tasks.map((item) => {
                     return (
-                        <Task key={item.taskName} item={item}/>
+                        <Task key={item.taskName} item={item} wallets={props.wallets} profiles={props.profiles}/>
                     )
                 })}
             </tbody>

@@ -69,39 +69,39 @@ export default function CreateTask(props) {
                 <Container>
                     <Row>
                         <Col>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="primary">
-                                {profileName === '' ? 'Profile' : profileName}
-                            </Dropdown.Toggle>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="primary">
+                                    {profileName === '' ? 'Profile' : profileName}
+                                </Dropdown.Toggle>
 
-                            <Dropdown.Menu className="createTaskDropdown">
-                                {Object.keys(props.profiles).map((item) => {
-                                    return (
-                                        <Dropdown.Item 
-                                        key={item} 
-                                        onClick={() => setProfileName(item)}
-                                        > {item} </Dropdown.Item>
-                                    )
-                                })}
-                            </Dropdown.Menu>
-                        </Dropdown>
+                                <Dropdown.Menu className="createTaskDropdown">
+                                    {Object.keys(props.profiles).map((item) => {
+                                        return (
+                                            <Dropdown.Item 
+                                            key={item} 
+                                            onClick={() => setProfileName(item)}
+                                            > {item} </Dropdown.Item>
+                                        )
+                                    })}
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </Col>
                         <Col>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="primary">
-                                {walletName === "" ? "Wallet" : walletName}
-                            </Dropdown.Toggle>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="primary">
+                                    {walletName === "" ? "Wallet" : walletName}
+                                </Dropdown.Toggle>
 
-                            <Dropdown.Menu className="createTaskDropdown">
-                                {Object.keys(props.wallets.wallets).map((item) => {
-                                    return (
-                                        <Dropdown.Item
-                                        key={item} 
-                                        onClick={() => setWalletName(item)}> {item} </Dropdown.Item>
-                                    )
-                                })}
-                            </Dropdown.Menu>
-                        </Dropdown>
+                                <Dropdown.Menu className="createTaskDropdown">
+                                    {Object.keys(props.wallets.wallets).map((item) => {
+                                        return (
+                                            <Dropdown.Item
+                                            key={item} 
+                                            onClick={() => setWalletName(item)}> {item} </Dropdown.Item>
+                                        )
+                                    })}
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </Col>
                     </Row>
                 </Container>

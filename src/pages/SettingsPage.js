@@ -11,7 +11,7 @@ const { ipcRenderer } = window;
 
 export default function SettingsPage() {
 
-  const [wallets, setWallets] = useState({});
+  const [wallets, setWallets] = useState({RPCURL: "", "wallets": {}});
 
   useEffect(() => {
     ipcRenderer.invoke('getWallets').then((result) => {
@@ -40,11 +40,11 @@ export default function SettingsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(wallets).map((item) => {
+                  {Object.keys(wallets.wallets).map((item) => {
                     return (
                       <tr key={ item }>
                         <td>{ item }</td>
-                        <td>{ wallets[item].privateKey }</td>
+                        <td>{ wallets.wallets[item].privateKey }</td>
                       </tr>
                     )
                   })}
