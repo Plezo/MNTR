@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Table } from 'react-bootstrap';
 
-import Task from './Task'
+import Task from '../Task/Task'
 
 export default function TaskTable(props) {
 
@@ -18,9 +18,9 @@ export default function TaskTable(props) {
                 </tr>
             </thead>
             <tbody>
-                {props.tasks.tasks.map((item) => {
+                {Object.keys(props.tasks).map((taskName) => {
                     return (
-                        <Task key={item.taskName} item={item} wallets={props.wallets} profiles={props.profiles}/>
+                        <Task key={taskName} task={props.tasks[taskName]} setTasks = {props.setTasks} wallets={props.wallets} profiles={props.profiles}/>
                     )
                 })}
             </tbody>

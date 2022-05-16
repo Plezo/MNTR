@@ -4,10 +4,10 @@ import { Button, Container, Row, Col } from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
 
-import CreateProfile from '../components/CreateProfile';
-import CreateTask from '../components/CreateTask';
-import CreateWallet from '../components/CreateWallet';
-import TaskTable from '../components/TaskTable';
+import CreateProfile from '../components/CreateProfile/CreateProfile';
+import CreateTask from '../components/CreateTask/CreateTask';
+import CreateWallet from '../components/CreateWallet/CreateWallet';
+import TaskTable from '../components/TaskTable/TaskTable';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './MintPage.css'
@@ -17,7 +17,7 @@ const { ipcRenderer } = window;
 export default function MintPage() {
   const [wallets, setWallets] = useState({'RPCURL': '', "wallets": {}});
   const [profiles, setProfiles] = useState({});
-  const [tasks, setTasks] = useState({tasks: []});
+  const [tasks, setTasks] = useState({});
 
   const handleProfilesChange = (newProfiles) => {
     setProfiles(newProfiles);
@@ -31,7 +31,7 @@ export default function MintPage() {
     setWallets(newWallets);
   }
 
-  const runAllTasks = () => {
+  const runAllTasks = (e) => {
     ipcRenderer.invoke('runTasks', {wallets: wallets, profiles: profiles, tasks: tasks}).then((result) => {
       if (result.success) {
         console.log(result.message)
@@ -40,6 +40,7 @@ export default function MintPage() {
         console.log(result.message)
       }
     });
+    e.preventDefault();
   }
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function MintPage() {
         <Container className="mintInfo">
           <Row className="justify-content-md-center mb-3">
             <Col md="auto">
-              <Button variant="success" size="lg" onClick={runAllTasks}>
+              <Button variant="success" size="lg" onClick={(e) => runAllTasks(e)}>
                 Run All
               </Button>
             </Col>
@@ -104,7 +105,7 @@ export default function MintPage() {
   
           <Row className="mb-3">
             <Col>
-              <TaskTable wallets={wallets} profiles={profiles} tasks={tasks} />
+              <TaskTable wallets={wallets} profiles={profiles} tasks={tasks} setTasks={handleTaskChange} />
             </Col>
           </Row>
         </Container>

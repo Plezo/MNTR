@@ -176,9 +176,7 @@ ipcMain.handle('getWallets', (event) => {
 
 ipcMain.handle('addTask', (event, obj) => {
   const file = `${app.getPath('userData')}\\tasks.json`;
-  const defaultTasks = {
-    tasks: []
-  }
+  const defaultTasks = {}
 
   let jsonParsed;
 
@@ -187,17 +185,22 @@ ipcMain.handle('addTask', (event, obj) => {
   else
     jsonParsed = JSON.parse(fs.readFileSync(file));
 
-  // Checks if wallet name/private key already saved
-  for (let i = 0; i < jsonParsed.tasks.length; i++) {
-    if (jsonParsed.tasks[i].taskName == obj.taskName)
-      return {"success": false, "message": "Task name already used!"};
+  // Checks if task name already used
+  if (jsonParsed[obj.taskName])
+    return {"success": false, "message": "Task name already used!"};
 
-    if (jsonParsed.tasks[i].walletName == obj.walletName)
-      return {"success": false, "message": `Private key already used for another task: ${jsonParsed.tasks[i].taskName}!`};
-  }
+  // Checks if wallet name already used
+  let walletUsed = false;
+  Object.keys(jsonParsed).forEach((key) => {
+    if (jsonParsed[key].walletName == obj.walletName)
+      walletUsed = true;
+  });
 
+  if (walletUsed) return {"success": false, "message": `Wallet already used for another task!`};
+
+  // Attempts to add new taskName: {} to the task json
   try {
-    jsonParsed.tasks.push(obj);
+    jsonParsed[obj.taskName] = obj;
 
     fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
     return {"success": true, "message": `Added task ${obj.walletName}!`, "content": jsonParsed};
@@ -210,9 +213,7 @@ ipcMain.handle('addTask', (event, obj) => {
 
 ipcMain.handle('getTasks', (event) => {
   const file = `${app.getPath('userData')}\\tasks.json`;
-  const defaultTasks = {
-    tasks: []
-  }
+  const defaultTasks = {}
 
   let jsonParsed;
 
@@ -225,19 +226,43 @@ ipcMain.handle('getTasks', (event) => {
 })
 
 ipcMain.handle('runTasks', async (event, data) => {
-  // check if rpcurl is not empty
   const RPCURL = data.wallets.RPCURL;
   const web3 = new Web3(RPCURL);
 
-  for (let i = 0; i < data.tasks.tasks.length; i++) {
-    const privateKey = data.wallets.wallets[data.tasks.tasks[i].walletName].privateKey;
-    web3.eth.accounts.wallet.add(privateKey);
-    const account = web3.eth.accounts.wallet[i].address;
+  Object.keys(data.tasks).forEach(async (key) => {
+    const privateKey = data.wallets.wallets[data.tasks[key].walletName].privateKey;
+    const accounts = web3.eth.accounts.privateKeyToAccount(privateKey);
 
-    const profile = data.profiles[data.tasks.tasks[i].profileName];
+    const profile = data.profiles[data.tasks[key].profileName];
     const contract = new web3.eth.Contract(profile.contractABI, profile.contractAddress);
     const tx = await contract.methods[`${profile.functionName}(${profile.parameters})`](profile.amount);
     const gasEstimate = await tx.estimateGas();
-    const sent = await tx.send({from: account, gas: gasEstimate, value: Web3.utils.toWei(profile.price, 'ether')});
+    await tx.send({
+      from: accounts.address, 
+      gas: gasEstimate, 
+      value: Web3.utils.toWei(profile.price, 'ether')
+    });
+  });
+
+  return {"success": true, "message": `Ran task(s)!`};
+})
+
+ipcMain.handle('deleteTask', async (event, data) => {
+  const file = `${app.getPath('userData')}\\tasks.json`;
+  const defaultTasks = {}
+  
+  let jsonParsed;
+  if(!fs.existsSync(file))
+    jsonParsed = defaultTasks;
+  else
+    jsonParsed = JSON.parse(fs.readFileSync(file));
+
+  if (jsonParsed[data.task]) {
+    delete jsonParsed[data.task];
+    fs.writeFileSync(file, JSON.stringify(jsonParsed), null, 2);
+    return {"success": true, "message": `Deleted task!`, "content": jsonParsed};
+  }
+  else {
+    return {"success": false, "message": `Task doesnt exist!`, "content": jsonParsed};
   }
 })

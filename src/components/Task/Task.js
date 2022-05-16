@@ -5,19 +5,14 @@ const { ipcRenderer } = window;
 
 export default function Task(props) {
     const runTask = async (e) => {
-        const task = {tasks: [{taskName: props.item.taskName, profileName: props.item.profileName, walletName: props.item.walletName}]};
+        const task = {taskName: {taskName: props.task.taskName, profileName: props.task.profileName, walletName: props.task.walletName}};
         const dataToSend = {wallets: props.wallets, profiles: props.profiles, tasks: task};
         ipcRenderer.invoke('runTasks', dataToSend);
         e.preventDefault();
     }
 
     const deleteTask = async (e) => {
-        let newTasks = props.tasks;
-
-        // change the way tasks are stored to the same way as wallets and get rid of tasks.tasks array, keep it as tasks obj
-        // delete newTasks[props.item.taskName];
-    
-        ipcRenderer.invoke('updateTasks', {wallets: props.wallets, profiles: props.profiles, tasks: newTasks}).then((result) => {
+        ipcRenderer.invoke('deleteTask', {task: props.task.taskName}).then((result) => {
           if (result.success) {
             // popup success message
             console.log(result.message);
@@ -35,13 +30,13 @@ export default function Task(props) {
         <>
             <tr>
                 <td>
-                    {props.item.taskName}
+                    {props.task.taskName}
                 </td>
                 <td>
-                    {props.item.profileName}
+                    {props.task.profileName}
                 </td>
                 <td>
-                    {props.item.walletName}
+                    {props.task.walletName}
                 </td>
                 <td>
                     temp
@@ -53,10 +48,10 @@ export default function Task(props) {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => runTask()}>
+                            <Dropdown.Item onClick={(e) => runTask(e)}>
                                 Run
                             </Dropdown.Item>
-                            <Dropdown.Item onClick={() => deleteTask()}>
+                            <Dropdown.Item onClick={(e) => deleteTask(e)}>
                                 Delete
                             </Dropdown.Item>
                         </Dropdown.Menu>
