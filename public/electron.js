@@ -10,6 +10,9 @@ function createWindow() {
     width: 1200,
     height: 800,
     title: "MNTR",
+    // titleBarStyle: 'hidden',
+    frame: false,
+    transparent: true, 
     // frame: false, // you're gonna wanna make your own frame to make it look nicer
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -17,7 +20,7 @@ function createWindow() {
     },
   });
 
-  win.setMenuBarVisibility(false);
+  win.setAutoHideMenuBar(true);
   win.setResizable(false);
 
   win.loadURL(

@@ -1,0 +1,25 @@
+.topBar {
+    background-color: #212922;
+    width: 100vw;
+    height: 5vh;
+    /* top: 0px;
+    right: 0px; */
+    /* position: relative; */
+    display: flex;
+    justify-content: right;
+    /* margin-left: 20vw; */
+    /* font-size: 1.25rem; */
+
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-app-region: drag;
+}
+
+.topBar > button {
+    all: unset;
+    /* top: 0; */
+    /* right: 0; */
+    /* position: absolute; */
+    margin-right: 10px;
+    -webkit-app-region: none;
+}
