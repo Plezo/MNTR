@@ -1,0 +1,13 @@
+.ProfilesPage {
+    margin-top: 5%;
+}
+
+.bottomPage {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 1%;
+}
+
+.walletsTable {
+    background-color: white;
+}

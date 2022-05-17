@@ -1,0 +1,33 @@
+.sideBar {
+  background-color: #000000;
+  width: 30vh;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  font-size: 1.25rem;
+}
+
+.appName {
+  font-weight: bold;
+  color: #ffffff;
+  user-select: none;
+}
+
+.sidebarList {
+  list-style: none;
+}
+
+.sidebarLink {
+  text-decoration: none;
+}
+
+.sidebarLink > span {
+  margin-left: 1.5vh;
+  color: #59C9A5;
+}
+
+ul > li {
+  margin-top: 5vh;
+  margin-right: 10vh;
+}

@@ -5,17 +5,6 @@ const { app, ipcMain, BrowserWindow } = require('electron');
 const isDev = require('electron-is-dev');
 const Web3 = require('web3');
 
-function formatParams(paramArr) {
-  let returnStr = "";
-  for (let i = 0; i < paramArr.length; i++) {
-    if (paramArr[i] === 'uint') paramArr[i] = 'uint256';
-
-    returnStr += `${paramArr[i]}, `;
-  }
-
-  return returnStr.slice(0, -2);
-}
-
 function createWindow() {
   const win = new BrowserWindow({
     width: 1200,

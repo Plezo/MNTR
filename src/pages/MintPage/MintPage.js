@@ -1,13 +1,12 @@
 import React from 'react'
 
 import { Button, Container, Row, Col } from 'react-bootstrap';
-import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
 
-import CreateProfile from '../components/CreateProfile/CreateProfile';
-import CreateTask from '../components/CreateTask/CreateTask';
-import CreateWallet from '../components/CreateWallet/CreateWallet';
-import TaskTable from '../components/TaskTable/TaskTable';
+import CreateProfile from '../../components/CreateProfile/CreateProfile';
+import CreateTask from '../../components/CreateTask/CreateTask';
+import CreateWallet from '../../components/CreateWallet/CreateWallet';
+import TaskTable from '../../components/TaskTable/TaskTable';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './MintPage.css'
@@ -84,7 +83,7 @@ export default function MintPage() {
 
   return (
     <>
-      <div className="mintPage">
+      <div className="mint">
         <Container className="mintInfo">
           <Row className="justify-content-md-center mb-3">
             <Col md="auto">
@@ -106,19 +105,6 @@ export default function MintPage() {
           <Row className="mb-3">
             <Col>
               <TaskTable wallets={wallets} profiles={profiles} tasks={tasks} setTasks={handleTaskChange} />
-            </Col>
-          </Row>
-        </Container>
-      </div>
-      <div className="bottomPage">
-        <Container>
-          <Row className="justify-content-md-center">
-            <Col md="auto">
-              <Link to="/settings">
-                <Button>
-                  Settings Page
-                </Button>
-              </Link>
             </Col>
           </Row>
         </Container>

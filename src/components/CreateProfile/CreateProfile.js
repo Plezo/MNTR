@@ -25,7 +25,6 @@ export default function CreateProfile(props) {
     const handleShow = () => setShow(true);
 
     const saveButtonEvent = async (e) => {
-    
         let toSave = {
           profileName: profileName,
           contractAddress: contractAddress,

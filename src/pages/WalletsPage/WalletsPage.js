@@ -5,12 +5,11 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './SettingsPage.css'
+import './WalletsPage.css'
 
 const { ipcRenderer } = window;
 
-export default function SettingsPage() {
-
+export default function WalletsPage() {
   const [wallets, setWallets] = useState({RPCURL: "", "wallets": {}});
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export default function SettingsPage() {
 
   return (
       <>
-        <div className="SettingsPage">
+        <div className="wallets">
           <Container>
             <Row className="mb-3">
               <Table className="walletsTable" responsive="sm">
@@ -50,17 +49,6 @@ export default function SettingsPage() {
                   })}
                 </tbody>
               </Table>
-            </Row>
-          </Container>
-        </div>
-        <div className="bottomPage">
-          <Container>
-            <Row className="justify-content-md-center">
-              <Col md="auto">
-                <Link to="/">
-                  <Button>Mint Page</Button>
-                </Link>
-              </Col>
             </Row>
           </Container>
         </div>
