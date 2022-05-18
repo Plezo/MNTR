@@ -8,6 +8,7 @@
 
 .topBar > button {
     all: unset;
+    color: var(--color3);
     margin-right: 40px;
     -webkit-app-region: none;
 }

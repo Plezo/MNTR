@@ -21,16 +21,14 @@ export default function Topbar() {
 
     return (
     <>
-        <IconContext.Provider value={{ color: '#fff' }}>
-            <div className='topBar'>
-                <button className='iconBtn' onClick={(e) => onMinimizeClick(e)} >
-                    <BsIcons.BsDashLg />
-                </button>
-                <button className='iconBtn' onClick={(e) => onExitClick(e)} >
-                    <BsIcons.BsXLg />
-                </button>
-            </div>
-        </IconContext.Provider>
+        <div className='topBar'>
+            <button className='iconBtn' onClick={(e) => onMinimizeClick(e)} >
+                <BsIcons.BsDashLg />
+            </button>
+            <button className='iconBtn' onClick={(e) => onExitClick(e)} >
+                <BsIcons.BsXLg />
+            </button>
+        </div>
     </>
     )
 }

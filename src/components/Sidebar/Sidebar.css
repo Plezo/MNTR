@@ -8,7 +8,7 @@
 
 .appName {
   font-weight: bold;
-  color: #ffffff;
+  color: var(--color3);
   user-select: none;
 }
 
@@ -22,7 +22,7 @@
 
 .sidebarLink > span {
   margin-left: 1.5vh;
-  color: #59C9A5;
+  color: var(--color3);
 }
 
 ul > li {
