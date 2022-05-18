@@ -12,13 +12,15 @@ import './App.css';
 export default function App() {
   return (
     <>
-      <Topbar />
-      <Sidebar />
-      <Routes>
-        <Route path="/" element={<MintPage />} />
-        <Route path="/wallets" element={<WalletsPage />} />
-        <Route path="/profiles" element={<ProfilesPage />} />
-      </Routes>
+      <div className='app'>
+        <Topbar />
+        <Sidebar />
+        <Routes>
+          <Route path="/" element={<MintPage />} />
+          <Route path="/wallets" element={<WalletsPage />} />
+          <Route path="/profiles" element={<ProfilesPage />} />
+        </Routes>
+      </div>
     </>
   );
 }

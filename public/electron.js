@@ -13,8 +13,7 @@ function createWindow() {
     resizable: false,
     show: false,
     frame: false,
-    // transparent: true, 
-    // frame: false, // you're gonna wanna make your own frame to make it look nicer
+    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
