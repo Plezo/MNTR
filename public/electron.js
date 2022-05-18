@@ -10,18 +10,16 @@ function createWindow() {
     width: 1200,
     height: 800,
     title: "MNTR",
-    // titleBarStyle: 'hidden',
+    resizable: false,
+    show: false,
     frame: false,
-    transparent: true, 
+    // transparent: true, 
     // frame: false, // you're gonna wanna make your own frame to make it look nicer
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
     },
   });
-
-  win.setAutoHideMenuBar(true);
-  win.setResizable(false);
 
   win.loadURL(
     isDev
@@ -32,6 +30,8 @@ function createWindow() {
   if (isDev) {
     win.webContents.openDevTools({ mode: 'detach' });
   }
+
+  win.on('ready-to-show', () => win.show());
 }
 
 app.whenReady().then(createWindow);
@@ -257,4 +257,12 @@ ipcMain.handle('deleteTask', async (event, data) => {
   else {
     return {"success": false, "message": `Task doesnt exist!`, "content": jsonParsed};
   }
+})
+
+ipcMain.handle('minimize', async (event) => {
+  BrowserWindow.getFocusedWindow().minimize();
+})
+
+ipcMain.handle('close', async (event) => {
+  BrowserWindow.getFocusedWindow().close();
 })
