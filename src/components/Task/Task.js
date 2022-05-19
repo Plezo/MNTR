@@ -1,4 +1,5 @@
 import { Dropdown } from 'react-bootstrap';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 import React from 'react';
 
 const { ipcRenderer } = window;
@@ -28,20 +29,20 @@ export default function Task(props) {
 
     return (
         <>
-            <tr>
-                <td>
+            <TableRow className="taskRow">
+                <TableCell className='taskCell'>
                     {props.task.taskName}
-                </td>
-                <td>
+                </TableCell>
+                <TableCell className='taskCell'>
                     {props.task.profileName}
-                </td>
-                <td>
+                </TableCell>
+                <TableCell className='taskCell'>
                     {props.task.walletName}
-                </td>
-                <td>
+                </TableCell>
+                <TableCell className='taskCell'>
                     temp
-                </td>
-                <td>
+                </TableCell>
+                <TableCell className='taskCell'>
                     <Dropdown>
                         <Dropdown.Toggle variant="primary">
                         Actions
@@ -56,8 +57,8 @@ export default function Task(props) {
                             </Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
-                </td>
-            </tr>
+                </TableCell>
+            </TableRow>
         </>
     )
 }

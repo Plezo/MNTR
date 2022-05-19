@@ -3,3 +3,7 @@ body {
     background-repeat: no-repeat;
     overflow: hidden;
 }
+
+.topButtons > * > * > * {
+    color: var(--color3) ;
+}

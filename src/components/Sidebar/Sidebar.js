@@ -8,7 +8,7 @@ import './Sidebar.css'
 export default function Sidebar() {
   return (
       <>
-        <IconContext.Provider value={{ color: '#fff' }}>
+        <IconContext.Provider value={{ color: 'var(--color3)' }}>
             <nav className='sideBar'>
                 <ul className='sidebarList'>
                     <li className='appName'>

@@ -1,7 +1,9 @@
 import React from 'react'
 
-import { Button, Form, Container, Row, Col, Dropdown, Modal } from 'react-bootstrap';
+import { Form, Container, Row, Col, Dropdown, Modal } from 'react-bootstrap';
+import { Button } from '@mui/material';
 import { useState } from 'react';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './CreateTask.css'
 
@@ -40,7 +42,7 @@ export default function CreateTask(props) {
 
     return (
     <>
-        <Button variant="primary" size="lg" onClick={handleShow}>
+        <Button onClick={handleShow} startIcon={<AddShoppingCartIcon />} sx={{color: 'var(--color4)'}}>
             Create Task
         </Button>
 

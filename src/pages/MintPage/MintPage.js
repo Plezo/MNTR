@@ -1,7 +1,9 @@
 import React from 'react'
 
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
+import { Button } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 
 import CreateProfile from '../../components/CreateProfile/CreateProfile';
 import CreateTask from '../../components/CreateTask/CreateTask';
@@ -85,9 +87,9 @@ export default function MintPage() {
     <>
       <div className="mint">
         <Container className="mintInfo">
-          <Row className="justify-content-md-center mb-3">
+          <Row className="justify-content-md-center mb-3 topButtons">
             <Col md="auto">
-              <Button variant="success" size="lg" onClick={(e) => runAllTasks(e)}>
+              <Button onClick={(e) => runAllTasks(e)} startIcon={<CheckIcon />} sx={{color: 'var(--color4)'}}>
                 Run All
               </Button>
             </Col>

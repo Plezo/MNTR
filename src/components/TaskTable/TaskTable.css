@@ -1,0 +1,15 @@
+.taskRow {
+    background-color: var(--color1);
+    color: var(--color3) !important;
+}
+
+.taskRow > * {
+    color: white !important;
+    border-color: #15291d !important;
+}
+
+.taskTableHead > * > * {
+    background-color: var(--color1);
+    color: var(--color5) !important;
+    border-color: #15291d !important;
+}

@@ -1,6 +1,8 @@
 import React from 'react'
 
-import { Button, Form, Container, Row, Col, Table, Modal } from 'react-bootstrap';
+import { Form, Container, Row, Col, Table, Modal } from 'react-bootstrap';
+import { Button } from '@mui/material';
+import AddCardIcon from '@mui/icons-material/AddCard';
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './CreateWallet.css'
@@ -44,7 +46,7 @@ export default function CreateProfile(props) {
 
     return (
     <>
-        <Button variant="primary" size="lg" onClick={handleShow}>
+        <Button onClick={handleShow} startIcon={<AddCardIcon />} sx={{color: 'var(--color4)'}}>
             Add Wallet
         </Button>
 
